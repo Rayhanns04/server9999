@@ -3,6 +3,10 @@ var app = express();
 var mysql = require("mysql");
 var bodyParser = require("body-parser");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
+const jwt = require("jsonwebtoken");
+
 const port = process.env.PORT || 4090;
 
 app.use(bodyParser.json({ type: "application/json" }));
@@ -18,6 +22,64 @@ var con = mysql.createConnection({
 
 app.get("/", (req, res) => {
   res.send("Tester");
+});
+
+// Authentication =================================================
+app.post("/auth/regist", (req, res) => {
+  const { username, password } = req.body;
+
+  bcrypt.hash(password, saltRounds, (err, hash) => {
+    if (err) {
+      console.log(err);
+    }
+
+    con.query(
+      "INSERT INTO Users (username, password) VALUES (?,?)",
+      [username, hash],
+      (error, result) => {
+        if (error) console.log(error);
+        else {
+          res.json({ message: "Success Registered!" });
+        }
+      }
+    );
+  });
+});
+
+// Login ======================================
+app.post("/auth/login", (req, res) => {
+  const { username, password } = req.body;
+
+  con.query("SELECT * FROM Users WHERE username=?", username, (err, result) => {
+    if (err) {
+      res.send({ err: err });
+    }
+
+    if (result.length > 0) {
+      bcrypt.compare(password, result[0].password, (err, response) => {
+        if (response) {
+          // Token
+          const id = result[0].id;
+          const token = jwt.sign({ id }, "koemprointekid", {
+            expiresIn: 300,
+          });
+
+          res.json({
+            auth: true,
+            token: token,
+            result: result,
+          });
+        } else {
+          res.json({
+            auth: false,
+            message: "Wrong username/password combination",
+          });
+        }
+      });
+    } else {
+      res.json({ auth: false, message: "No user exists!" });
+    }
+  });
 });
 
 // Posts =================================================
@@ -60,17 +122,13 @@ app.post("/posts", (req, res) => {
 // Update Process =================================
 app.put("/posts/:id", (req, res) => {
   const id = req.params.id;
-  con.query(
-    "UPDATE Posts SET ? WHERE id=?",
-    [req.body, id],
-    (error, rows) => {
-      if (error) console.log(error);
-      else {
-        res.send(JSON.stringify(rows));
-        // res.send(`Posts with the title: ${title} has been added`);
-      }
+  con.query("UPDATE Posts SET ? WHERE id=?", [req.body, id], (error, rows) => {
+    if (error) console.log(error);
+    else {
+      res.send(JSON.stringify(rows));
+      // res.send(`Posts with the title: ${title} has been added`);
     }
-  );
+  });
 });
 
 // Delete =================================
