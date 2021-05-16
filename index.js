@@ -20,6 +20,7 @@ app.get("/", (req, res) => {
   res.send("Tester");
 });
 
+// Posts =================================================
 // get ======================================
 app.get("/posts", (req, res) => {
   con.query("select * from Posts", (error, rows, fields) => {
@@ -57,8 +58,8 @@ app.post("/posts", (req, res) => {
 });
 
 // Update Process =================================
-app.put("/postsupdate", (req, res) => {
-  const { id, title, desc, link, task, date, image, avatar } = req.body;
+app.put("/posts/:id", (req, res) => {
+  const id = req.params.id;
   con.query(
     "UPDATE Posts SET ? WHERE id=?",
     [req.body, id],
@@ -77,6 +78,75 @@ app.delete("/posts/:id", (req, res) => {
   console.log("Params" + req.params.id);
   con.query(
     "DELETE FROM Posts where id=? ",
+    req.params.id,
+    (error, rows, fields) => {
+      if (error) console.log(error);
+      else {
+        console.log(rows);
+        res.send("Succes Delete");
+      }
+    }
+  );
+});
+
+// Members =================================================
+// Get ==============================
+app.get("/members", (req, res) => {
+  con.query("select * from Members", (error, rows, fields) => {
+    if (error) console.log(error);
+    else {
+      res.send(rows);
+    }
+  });
+});
+
+// find by id ==============================
+app.get("/members/:id", (req, res) => {
+  con.query(
+    "SELECT * FROM Members where id=? ",
+    req.params.id,
+    (error, rows, fields) => {
+      if (error) console.log(error);
+      else {
+        console.log(rows);
+        res.send(JSON.stringify(rows));
+      }
+    }
+  );
+});
+
+// Posts ====================================
+app.post("/members", (req, res) => {
+  con.query("insert into Members set ? ", req.body, (error, rows, fields) => {
+    if (error) console.log(error);
+    else {
+      console.log(rows);
+      res.send(JSON.stringify(rows));
+    }
+  });
+});
+
+// Update Process =================================
+app.put("/members/:id", (req, res) => {
+  const id = req.params.id;
+  con.query(
+    "UPDATE Members SET ? WHERE id=?",
+    [req.body, id],
+    (error, rows) => {
+      if (error) console.log(error);
+      else {
+        res.send(JSON.stringify(rows));
+        // res.send(`Posts with the title: ${title} has been added`);
+      }
+    }
+  );
+});
+
+// Delete =================================
+app.delete("/members/:id", (req, res) => {
+  console.log("Params" + req.params.id);
+  con.query(
+    "DELETE FROM Members where id=? ",
     req.params.id,
     (error, rows, fields) => {
       if (error) console.log(error);
