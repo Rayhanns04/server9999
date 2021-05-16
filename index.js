@@ -1,20 +1,19 @@
 var express = require("express");
 var app = express();
-
 var mysql = require("mysql");
 var bodyParser = require("body-parser");
 const cors = require("cors");
 const port = process.env.PORT || 4090;
 
 app.use(bodyParser.json({ type: "application/json" }));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 var con = mysql.createConnection({
-  host: "koempro-server.cwsly2cix1oo.us-east-1.rds.amazonaws.com",
-  user: "admin",
-  password: "adminintek",
-  database: "koempro_server",
+  host: "freedb.tech",
+  user: "freedbtech_Hans",
+  database: "freedbtech_Koempro",
+  password: "Sumiyati81",
 });
 
 app.get("/", (req, res) => {
@@ -46,7 +45,7 @@ app.get("/posts/:id", (req, res) => {
   );
 });
 
-// Posts
+// Posts ====================================
 app.post("/posts", (req, res) => {
   con.query("insert into Posts set ? ", req.body, (error, rows, fields) => {
     if (error) console.log(error);
@@ -57,27 +56,36 @@ app.post("/posts", (req, res) => {
   });
 });
 
-// // Update =================================
-// app.put("/posts/:id", (req, res) => {
-//   con.query(
-//     "UPDATE Posts SET title=?, desc=?, link=?, task=?, date=?, image=?, avatar=?",
-//     [
-//       req.body.title,
-//       req.body.desc,
-//       req.body.link,
-//       req.body.task,
-//       req.body.date,
-//       req.body.image,
-//       req.body.avatar,
-//     ],
-//     (error, rows, fields) => {
-//       if (error) console.log(error);
-//       else {
-//         console.log(rows);
-//         res.end(JSON.stringify(rows));
-//       }
-//     }
-//   );
-// });
+// Update Process =================================
+app.put("/postsupdate", (req, res) => {
+  const { id, title, desc, link, task, date, image, avatar } = req.body;
+  con.query(
+    "UPDATE Posts SET ? WHERE id=?",
+    [req.body, id],
+    (error, rows) => {
+      if (error) console.log(error);
+      else {
+        res.send(JSON.stringify(rows));
+        // res.send(`Posts with the title: ${title} has been added`);
+      }
+    }
+  );
+});
+
+// Delete =================================
+app.delete("/posts/:id", (req, res) => {
+  console.log("Params" + req.params.id);
+  con.query(
+    "DELETE FROM Posts where id=? ",
+    req.params.id,
+    (error, rows, fields) => {
+      if (error) console.log(error);
+      else {
+        console.log(rows);
+        res.send("Succes Delete");
+      }
+    }
+  );
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
