@@ -25,6 +25,24 @@ app.get("/", (req, res) => {
 });
 
 // Authentication =================================================
+const { verify } = require("jsonwebtoken");
+
+const validateToken = (req, res, next) => {
+  const accessToken = req.header("accessToken");
+
+  if (!accessToken) return res.json({ error: "User not logged in!" });
+
+  try {
+    const validToken = verify(accessToken, "koemprointekid");
+
+    if (validToken) {
+      return next();
+    }
+  } catch (error) {
+    return res.json({ error: error });
+  }
+};
+
 app.post("/auth/regist", (req, res) => {
   const { username, password } = req.body;
 
@@ -58,17 +76,12 @@ app.post("/auth/login", (req, res) => {
     if (result.length > 0) {
       bcrypt.compare(password, result[0].password, (err, response) => {
         if (response) {
-          // Token
           const id = result[0].id;
           const token = jwt.sign({ id }, "koemprointekid", {
             expiresIn: 300,
           });
 
-          res.json({
-            auth: true,
-            token: token,
-            result: result,
-          });
+          res.json(token);
         } else {
           res.json({
             auth: false,
