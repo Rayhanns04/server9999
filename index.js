@@ -6,6 +6,7 @@ const cors = require("cors");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
+const { verify } = require("jsonwebtoken");
 
 const port = process.env.PORT || 4090;
 
@@ -25,7 +26,6 @@ app.get("/", (req, res) => {
 });
 
 // Authentication =================================================
-const { verify } = require("jsonwebtoken");
 
 const validateToken = (req, res, next) => {
   const accessToken = req.header("accessToken");
@@ -198,7 +198,7 @@ app.post("/members", (req, res) => {
 });
 
 // Update Process =================================
-app.put("/members/:id", (req, res) => {
+app.put("/members/:id", validateToken, (req, res) => {
   const id = req.params.id;
   con.query(
     "UPDATE Members SET ? WHERE id=?",
