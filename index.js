@@ -39,7 +39,9 @@ const validateToken = (req, res, next) => {
       return next();
     }
   } catch (error) {
-    return res.json({ error: "Don't Have Access Token, Please Sign In Again" });
+    return res.json({
+      error: "Don't Have Access Token, Please Sign in Again!",
+    });
   }
 };
 
@@ -77,9 +79,7 @@ app.post("/auth/login", (req, res) => {
       bcrypt.compare(password, result[0].password, (err, response) => {
         if (response) {
           const id = result[0].id;
-          const token = jwt.sign({ id }, "koemprointekid", {
-            expiresIn: 300,
-          });
+          const token = jwt.sign({ id }, "koemprointekid");
 
           res.json(token);
         } else {
@@ -128,6 +128,7 @@ app.post("/posts", validateToken, (req, res) => {
     else {
       console.log(rows);
       res.send(JSON.stringify(rows));
+      res.json(rows);
     }
   });
 });
