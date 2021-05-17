@@ -39,7 +39,7 @@ const validateToken = (req, res, next) => {
       return next();
     }
   } catch (error) {
-    return res.json({ error: error });
+    return res.json({ error: "Don't Have Access Token, Please Sign In Again" });
   }
 };
 
