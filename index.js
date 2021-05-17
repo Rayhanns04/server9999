@@ -66,7 +66,7 @@ app.post("/auth/regist", (req, res) => {
   });
 });
 
-// Login ======================================
+// Login =======================================
 app.post("/auth/login", (req, res) => {
   const { username, password } = req.body;
 
