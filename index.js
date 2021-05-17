@@ -107,7 +107,7 @@ app.get("/posts", (req, res) => {
 });
 
 // find by id ==============================
-app.get("/posts/:id", (req, res) => {
+app.get("/posts/:id", validateToken, (req, res) => {
   con.query(
     "SELECT * FROM Posts where id=? ",
     req.params.id,
@@ -122,7 +122,7 @@ app.get("/posts/:id", (req, res) => {
 });
 
 // Posts ====================================
-app.post("/posts", (req, res) => {
+app.post("/posts", validateToken, (req, res) => {
   con.query("insert into Posts set ? ", req.body, (error, rows, fields) => {
     if (error) console.log(error);
     else {
@@ -133,7 +133,7 @@ app.post("/posts", (req, res) => {
 });
 
 // Update Process =================================
-app.put("/posts/:id", (req, res) => {
+app.put("/posts/:id", validateToken, (req, res) => {
   const id = req.params.id;
   con.query("UPDATE Posts SET ? WHERE id=?", [req.body, id], (error, rows) => {
     if (error) console.log(error);
@@ -145,7 +145,7 @@ app.put("/posts/:id", (req, res) => {
 });
 
 // Delete =================================
-app.delete("/posts/:id", (req, res) => {
+app.delete("/posts/:id", validateToken, (req, res) => {
   console.log("Params" + req.params.id);
   con.query(
     "DELETE FROM Posts where id=? ",
@@ -172,7 +172,7 @@ app.get("/members", (req, res) => {
 });
 
 // find by id ==============================
-app.get("/members/:id", (req, res) => {
+app.get("/members/:id", validateToken, (req, res) => {
   con.query(
     "SELECT * FROM Members where id=? ",
     req.params.id,
@@ -187,7 +187,7 @@ app.get("/members/:id", (req, res) => {
 });
 
 // Posts ====================================
-app.post("/members", (req, res) => {
+app.post("/members", validateToken, (req, res) => {
   con.query("insert into Members set ? ", req.body, (error, rows, fields) => {
     if (error) console.log(error);
     else {
@@ -214,7 +214,7 @@ app.put("/members/:id", validateToken, (req, res) => {
 });
 
 // Delete =================================
-app.delete("/members/:id", (req, res) => {
+app.delete("/members/:id", validateToken, (req, res) => {
   console.log("Params" + req.params.id);
   con.query(
     "DELETE FROM Members where id=? ",
