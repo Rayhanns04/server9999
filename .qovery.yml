@@ -1,0 +1,11 @@
+---
+application:
+  name: "server9999"
+  project: "koempro-api"
+  organization: "QoveryCommunity"
+routers:
+- name: "main-server9999"
+  routes:
+  - application_name: "server9999"
+    paths:
+    - "/*"
