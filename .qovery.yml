@@ -1,7 +1,7 @@
 ---
 application:
   name: "server9999"
-  project: "koempro-api"
+  project: "server999"
   organization: "QoveryCommunity"
 routers:
 - name: "main-server9999"
